@@ -3,6 +3,8 @@ pragma solidity >=0.7.0 <0.9.0;
 
 interface IMyToken {
     function getPastVotes(address, uint256) external view returns (uint256);
+
+    function grantRole(bytes32 role, address account) external;
 }
 
 contract TokenizedBallot {
@@ -13,21 +15,34 @@ contract TokenizedBallot {
 
     IMyToken public tokenContract;
     Proposal[] public proposals;
+    string[] public proposalNames;
+    bytes32[] public proposalNames32;
     uint256 public targetBlockNumber;
 
     mapping(address => uint256) public votePowerSpent;
 
     constructor(
-        bytes32[] memory _proposalNames,
+        string[] memory _proposalNames,
         address _tokenContract,
         uint256 _targetBlockNumber
     ) {
         tokenContract = IMyToken(_tokenContract);
         targetBlockNumber = _targetBlockNumber;
         for (uint i = 0; i < _proposalNames.length; i++) {
-            proposals.push(Proposal({name: _proposalNames[i], voteCount: 0}));
+            proposalNames.push(_proposalNames[i]);
         }
+        for (uint i=0; i < proposalNames.length; i++) {
+            proposalNames[i]
+        }
+
+
     }
+            proposals.push(Proposal({name: _proposalNames[i], voteCount: 0}));
+
+    function getBytes32ArrayForInput() pure public returns (bytes32[3] b32Arr) {
+
+    }
+
 
     function vote(uint256 proposal, uint256 amount) external {
         require(

@@ -3,8 +3,6 @@ import { MyToken__factory } from "../typechain-types";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const MINT_VALUE = ethers.utils.parseEther(".001");
-
 async function main() {
 
     const provider = ethers.getDefaultProvider("goerli", {
@@ -17,15 +15,16 @@ async function main() {
 
     console.log('signer.address', signer.address);
     console.log("process.argv[2]", process.argv[2]);
-
+    const lastBlock = await provider.getBlock("latest");
+    console.log("lastBlock number:", lastBlock.number)
     const tokenContractFactory = new MyToken__factory(signer);
     const tokenContract = tokenContractFactory.attach(process.argv[2]);
-    const initialBalance = await tokenContract.balanceOf(signer.address);
-    console.log("balance b4 mint", initialBalance);
-    const tx = await tokenContract.mint(signer.address, MINT_VALUE);
-    await tx.wait();
-    const balanceAfterMint = await tokenContract.balanceOf(signer.address);
-    console.log("balance after mint", balanceAfterMint);
+    const totalSupply = await tokenContract.totalSupply();
+    console.log(`total supply ERC20 Tokens are: ${totalSupply}`)
+    const tokenBalance = await tokenContract.balanceOf(process.argv[3]);
+    console.log(`balance of account ${process.argv[3]} is ${tokenBalance}`);
+    const votePower = await tokenContract.getVotes(process.argv[3]);
+    console.log(`Vote power of accounts ${process.argv[3]} is ${votePower}`);
 
 }
 main().catch((error) => {

@@ -19,8 +19,7 @@ async function main() {
     const contractFactory = new MyToken__factory(signer);
     const contract = await contractFactory.deploy();
     await contract.deployed();
-
-    console.log("process.argv[2]", process.argv[2]);
+    
     console.log(`contract address deployed to ${contract.address}\n`);
 
 }
