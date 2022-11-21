@@ -13,21 +13,22 @@ async function main() {
         infura: process.env.INFURA_API_KEY,
         etherscan: process.env.ETHERSCAN_API_KEY,
       });
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY_4 ?? "");
+    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "");
     const signer = wallet.connect(provider);
-
-    console.log('signer.address', signer.address);
-    console.log("process.argv[2]", process.argv[2]);
-
     const tokenContractFactory = new MyToken__factory(signer);
     const tokenContract = tokenContractFactory.attach(process.argv[2]);
+
+    // check initial balance
     const initialBalance = await tokenContract.balanceOf(process.argv[3]);
     console.log("balance b4 mint", initialBalance);
+
+    // mint
     const tx = await tokenContract.mint(process.argv[3], MINT_VALUE);
     await tx.wait();
+
+    // check after balance
     const balanceAfterMint = await tokenContract.balanceOf(process.argv[3]);
     console.log("balance after mint", balanceAfterMint);
-
 }
 main().catch((error) => {
     console.log(error);

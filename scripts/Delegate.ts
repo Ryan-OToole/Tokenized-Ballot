@@ -13,7 +13,7 @@ async function main() {
         etherscan: process.env.ETHERSCAN_API_KEY,
       });
       
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY_4 ?? "");
+    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY_2 ?? "");
     const signer = wallet.connect(provider);
     console.log('signer.address', signer.address);
     console.log("process.argv[2]", process.argv[2]);

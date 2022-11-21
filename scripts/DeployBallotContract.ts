@@ -10,26 +10,27 @@ async function main() {
         infura: process.env.INFURA_API_KEY,
         etherscan: process.env.ETHERSCAN_API_KEY,
       });
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "");
-    const signer = wallet.connect(provider);
-    const balance = await signer.getBalance();
-    console.log(
-      `Working on Goerli Testnet connected to wallet ${signer.address} with balance of ${balance}`
-    );
-    const contractFactory = new TokenizedBallot__factory(signer);
-    const PROPOSALS = ["vanilla", "chocolate", "mint chocolate chip", "half-baked"];
-    let PROPOSALSBYTES32 = [];
-    for (let proposal of PROPOSALS) {
-      PROPOSALSBYTES32.push(ethers.utils.hexlify(proposal))
-    }
+      const block = await provider.getBlock("latest");
+      const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "");
+      const signer = wallet.connect(provider);
+      const balance = await signer.getBalance();
+      console.log(
+        `Working on Goerli Testnet connected to wallet ${signer.address} with balance of ${balance}`
+      );
+      const contractFactory = new TokenizedBallot__factory(signer);
+      const vanilla = ethers.utils.formatBytes32String("vanilla");
+      const chocolate = ethers.utils.formatBytes32String("chocolate");
+      const mint = ethers.utils.formatBytes32String("mint chocolate chip");
+      const baked = ethers.utils.formatBytes32String("half-baked");
+      const PROPOSALS = [vanilla, chocolate, mint, baked];
+      console.log("process.argv[2]", process.argv[2]);
+      console.log("process.argv[3]", process.argv[3]);
 
-    const GOERLI_BLOCK = 7988375;
-    const TOKEN_CONTRACT="0x02bc85092257eFDe8605beA90cC594042B865B5F";
 
-    const contract = await contractFactory.deploy(PROPOSALSBYTES32, TOKEN_CONTRACT, GOERLI_BLOCK);
-    await contract.deployed();
-  
-    console.log(`contract address deployed to ${contract.address}\n`);
+
+      const contract = await contractFactory.deploy(PROPOSALS, process.argv[2], process.argv[3]);
+      await contract.deployed();
+      console.log(`contract address deployed to ${contract.address}\n`);
 
 }
 main().catch((error) => {

@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { MyToken__factory } from "../typechain-types";
+import { TokenizedBallot__factory } from "../typechain-types";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -10,20 +10,22 @@ async function main() {
         infura: process.env.INFURA_API_KEY,
         etherscan: process.env.ETHERSCAN_API_KEY,
       });
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY_4 ?? "");
+    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY_3 ?? "");
     const signer = wallet.connect(provider);
 
     console.log('signer.address', signer.address);
     console.log("contract address:", process.argv[2]);
 
-    const tokenContractFactory = new MyToken__factory(signer);
-    const tokenContract = tokenContractFactory.attach(process.argv[2]);
-    const initialBalance = await tokenContract.getVotes(process.argv[3]);
+    const ballotContractFactory = new TokenizedBallot__factory(signer);
+    const ballotContract = ballotContractFactory.attach(process.argv[2]);
+    const initialBalance = await ballotContract.votingPower(process.argv[3]);
     console.log(`voting power of ${process.argv[3]} is ${initialBalance}`);
-    const tx = await tokenContract.vote(process.argv[3], MINT_VALUE);
+    const tx = await ballotContract.vote(process.argv[4], process.argv[5]);
     await tx.wait();
-    const balanceAfterMint = await tokenContract.balanceOf(process.argv[3]);
-    console.log("balance after mint", balanceAfterMint);
+    const winningProposal = await ballotContract.winningProposal();
+    console.log("winningProposal", winningProposal);
+    const afterBalance = await ballotContract.votingPower(process.argv[3]);
+    console.log(`voting power of ${process.argv[3]} is ${afterBalance}`);
 
 }
 main().catch((error) => {
